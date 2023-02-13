@@ -35,7 +35,7 @@ namespace GestionBancariaAppNS
                 return ERR_CANTIDAD_NO_VALIDA;
             if (saldo < cantidad)
                 return ERR_SALDO_INSUFICIENTE;
-            saldo += cantidad;
+            saldo -= cantidad;
             return 0;
         }
 
