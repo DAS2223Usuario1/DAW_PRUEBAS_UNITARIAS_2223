@@ -55,6 +55,7 @@ namespace GestionBancariaTest
         }
 
         [TestMethod]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ValidarReintegroR1SaldoInsufDAS2223()
         {
             double[,] casosPruebaR1 =
@@ -71,39 +72,44 @@ namespace GestionBancariaTest
 
                 //Creamos nuevo objeto de Clase GestionBancariaApp para trabajar sobre este
                 GestionBancariaApp miApp = new GestionBancariaApp(saldoInicial);
+                try
+                {
+                    miApp.RealizarReintegro(reintegro);
+                }
+                catch(ArgumentOutOfRangeException exception)
+                {
+                    StringAssert.Contains(exception.Message, GestionBancariaApp.ERR_SALDO_INSUFICIENTE);
+                    return;
+                }
 
-                miApp.RealizarReintegro(reintegro);
-
-                Assert.AreEqual(saldoEsperado, miApp.ObtenerSaldo(), 0.001,
-                    "Se produjo un error al realizar el reintegro, saldo incorrecto.");
+                Assert.Fail("Error. Se debería haber producido una excepción");
             }
         }
         [TestMethod]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ValidarReintegroR2CantidadInsufDAS2223()
         {
-            double[,] casosPruebaR2 =
-            {
-                { 1000, 0, 1000 }, //Se espera un saldo final de 1000, ya que tras el error, el saldo queda intacto.
-                { 1000, -1, 1000 }, //Se espera un saldo final de 1000, ya que tras el error, el saldo queda intacto.
-            };
-
-            for (int i = 0; i < 2; i++)
-            {
-                double saldoInicial = casosPruebaR2[i, 0];
-                double reintegro = casosPruebaR2[i, 1];
-                double saldoEsperado = casosPruebaR2[i, 2];
+            double saldoInicial = 1000;
+            double reintegro = -250;
+            double saldoFinal = saldoInicial - reintegro;
 
                 //Creamos nuevo objeto de Clase GestionBancariaApp para trabajar sobre este
                 GestionBancariaApp miApp = new GestionBancariaApp(saldoInicial);
-
+            try
+            {
                 miApp.RealizarReintegro(reintegro);
-
-                Assert.AreEqual(saldoEsperado, miApp.ObtenerSaldo(), 0.001,
-                    "Se produjo un error al realizar el reintegro, saldo incorrecto.");
             }
+            catch (ArgumentOutOfRangeException exception)
+            {
+                //assert
+                StringAssert.Contains(exception.Message, GestionBancariaApp.ERR_CANTIDAD_NO_VALIDA);
+                return;
+            }
+            Assert.Fail("Error. Se debía haber producido una excepción.");
         }
         // 2. PRUEBAS INGRESOS
         [TestMethod]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ValidarIngresoIN1CantidadInsufDAS2223()
         {
             double[,] casosPruebaIN1 =
@@ -122,14 +128,21 @@ namespace GestionBancariaTest
                 //Creamos nuevo objeto de Clase GestionBancariaApp para trabajar sobre este
                 GestionBancariaApp miApp = new GestionBancariaApp(saldoInicial);
 
-                miApp.RealizarIngreso(ingreso);
-
-                Assert.AreEqual(saldoEsperado, miApp.ObtenerSaldo(), 0.001,
-                    "Se produjo un error al realizar el ingreso, saldo incorrecto.");
+                try
+                {
+                    miApp.RealizarIngreso(ingreso);
+                }
+                catch (ArgumentOutOfRangeException exception)
+                {
+                    //assert
+                    StringAssert.Contains(exception.Message, GestionBancariaApp.ERR_CANTIDAD_NO_VALIDA);
+                    return;
+                }
+                Assert.Fail("Error. Se debía haber producido una excepción.");
             }
         }
         [TestMethod]
-        public void ValidarIngresoIN2DAS2223()
+        public void ValidarIngresoIN2ValidoDAS2223()
         {
             double[,] casosPruebaIN2 =
             {
